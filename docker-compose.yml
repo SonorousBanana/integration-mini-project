@@ -1,0 +1,48 @@
+services:
+  # Redis: holds all app state. The service name "redis" is also its hostname on the compose network.
+  redis:
+    image: redis:7-alpine
+    # appendonly = write every change to disk, so counts survive restarts
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - backend
+    # No "ports:" on purpose: only the app needs to reach Redis, not the host.
+
+  app:
+    build: ./visit-counter-app
+    image: visit-counter:1.0.0
+    ports:
+      - "8000:8000"
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      APP_ENV: docker
+      APP_VERSION: 1.0.0
+      LOG_LEVEL: INFO
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - frontend
+      - backend
+
+networks:
+  # Published ports go through here.
+  frontend:
+    driver: bridge
+  # App <-> Redis only. internal = no route to the outside world.
+  backend:
+    driver: bridge
+    internal: true
+
+volumes:
+  redis-data:
