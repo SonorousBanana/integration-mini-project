@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+
+  # namespace
+  - namespace/namespace.yml
+
+  # secrets
+  - secrets/registry-credentials.yml
+  - configmaps/web-app-configmap.yml
+
+  # redis
+  - redis/redis-svc.yml
+  - redis/redis-sts.yml
+  
+  # frontend
+  - frontend/web-app-svc.yml
+  - frontend/web-app-deployment.yml

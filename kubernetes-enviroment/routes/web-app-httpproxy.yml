@@ -1,0 +1,14 @@
+apiVersion: projectcontour.io/v1
+kind: HTTPProxy
+metadata:
+  name: web-app
+  namespace: visit-counter
+spec:
+  virtualhost:
+    fqdn: visit-counter.example.com
+  routes:
+    - conditions:
+        - prefix: /
+      services:
+        - name: web-app
+          port: 8000
