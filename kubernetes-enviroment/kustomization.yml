@@ -16,3 +16,6 @@ resources:
   # frontend
   - frontend/web-app-svc.yml
   - frontend/web-app-deployment.yml
+
+  # routes if using Contour ingress controller
+  # - routes/web-app-httpproxy.yml
